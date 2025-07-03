@@ -1,0 +1,60 @@
+services:
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.local
+    container_name: react-frontend
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    networks:
+      - webnet
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    container_name: python-core
+    volumes:
+      - ./app:/app
+    expose:
+      - "8000"
+    env_file:
+      - .env
+    networks:
+      - webnet
+    restart: on-failure
+
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - webnet
+
+  nginx-gateway:
+    build:
+      context: ../nginx-local
+    container_name: nginx-gateway
+    ports:
+      - "8000:8000"
+    networks:
+      - webnet
+    restart: always
+
+volumes:
+  pgdata:
+
+networks:
+  webnet:
+

@@ -1,0 +1,35 @@
+name: Pull Request Check
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  pr-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20' # or match your project version
+
+      - name: Install dependencies and run lint
+        run: |
+          cd $GITHUB_WORKSPACE/frontend/
+          npm ci
+          npm run lint
+
+      - name: Build Docker Images (no push)
+        run: |
+          set -e
+          cd $GITHUB_WORKSPACE/frontend/
+          docker build -t temp/frontend:pr .
+          cd $GITHUB_WORKSPACE/backend/
+          docker build -t temp/backend:pr .

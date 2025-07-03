@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - webnet
+
+  nginx-gateway:
+    image: "$DOCKER_USERNAME/nginx:$TAG"
+    container_name: nginx-gateway
+    ports:
+      - "80:80"
+      - "443:443"
+    # make sure you have this on your host machine
+    volumes:
+      - /home/ubuntu/website/logs:/var/log/nginx
+      - /home/ubuntu/website/nginx/certificates:/etc/letsencrypt
+      - /home/ubuntu/website/nginx/certificates-data:/data/certbot
+    networks:
+      - webnet
+    restart: always
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    # make sure you have this on your host machine
+    volumes:
+      - /home/ubuntu/website/nginx/certificates:/etc/letsencrypt
+      - /home/ubuntu/website/nginx/certificates-data:/data/certbot
+    entrypoint: >
+      sh -c "
+        while :; do
+          certbot renew;
+          sleep 12h & wait $${!};
+        done"
+    networks:
+      - webnet
+    restart: on-failure
+
+volumes:
+  pgdata:
+
+networks:
+  webnet:
+
+
