@@ -4,6 +4,8 @@ services:
       context: ../frontend
       dockerfile: Dockerfile.local
     container_name: react-frontend
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     volumes:
       - ../frontend:/app
       - /app/node_modules

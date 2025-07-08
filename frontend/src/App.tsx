@@ -1,35 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {Box, Divider, Typography} from "@mui/material";
+import UploadSection from "./components/UploadSection.tsx";
+import ResultSection from "./components/ResultSection.tsx";
 
 function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    return (
+        <Box p={3} style={{fontFamily: 'Roboto, sans-serif', backgroundColor: '#f9f9f9', minHeight: '90vh'}}>
+            <Box textAlign="center" mb={4}>
+                <Typography variant="h4" style={{color: '#8c30f5'}}>
+                    PneumoDetect AI
+                </Typography>
+                <Typography variant="subtitle2">Advanced Chest X-Ray Analysis System</Typography>
+            </Box>
+
+            <Box display="flex" justifyContent="center" gap={4} flexWrap="wrap">
+                <Box width={{xs: '100%', md: '40%'}}>
+                    <UploadSection/>
+                </Box>
+                {/*<Box width={{xs: '100%', md: '50%'}}>*/}
+                {/*    <ResultSection/>*/}
+                {/*</Box>*/}
+            </Box>
+
+            <Divider style={{margin: '40px 0'}}/>
+            <Box display="flex" justifyContent="space-between" fontSize={12} color="gray">
+                <Typography>🧬 FDA Approved Algorithm</Typography>
+                <Typography>🔒 HIPAA Compliant</Typography>
+                <Typography>Results are for reference only. Consult a medical professional for
+                    diagnosis.</Typography>
+            </Box>
+        </Box>
+    )
 }
 
 export default App
