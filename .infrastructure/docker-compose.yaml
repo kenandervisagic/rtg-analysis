@@ -5,7 +5,7 @@ services:
     expose:
       - 80
     networks:
-      - webnet
+      - rtg-analysis_webnet
     restart: always
 
   backend:
@@ -20,7 +20,7 @@ services:
     expose:
       - 8000
     networks:
-      - webnet
+      - rtg-analysis_webnet
     restart: always
 
 

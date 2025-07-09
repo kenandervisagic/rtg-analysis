@@ -6,6 +6,7 @@ on:
     paths:
       - 'frontend/**'
       - 'backend/**'
+      - '.infrastructure/docker-compose.yaml'
 
 jobs:
   build-app:
