@@ -59,6 +59,9 @@ jobs:
           docker-compose -f docker-compose-infra.yaml up -d
         env:
           DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           CERT_PEM: ${{ secrets.CERT_PEM }}
           KEY_PEM: ${{ secrets.KEY_PEM }}
           CA_PEM: ${{ secrets.CA_PEM }}
