@@ -58,6 +58,9 @@ const UploadSection = ({ onSuccess }: UploadSectionProps) => {
             if (previewUrl) onSuccess(previewUrl);
         } catch (err) {
             setError("Upload failed. Please try again.");
+            // TODO: handle errors
+            console.log(error)
+            console.log(err)
         } finally {
             setLoading(false);
         }
