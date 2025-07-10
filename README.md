@@ -56,6 +56,42 @@ The system is containerized and fully automated using DevOps practices, enabling
 
 ---
 
+## ⚙️ Local Development Setup
+
+### Environment Variables Setup
+
+Before running the application locally, make sure to create and configure environment files in both the frontend and backend directories:
+
+- **Frontend:**
+
+  ```bash
+  cd frontend
+  cp env.example .env
+  ```
+  Then edit .env to set your local config (e.g., API URLs)
+
+
+- **Backend:**
+
+  ```bash
+  cd backend
+  cp env.example .env
+  ```
+  Then edit .env to set your local config (e.g., DB_USER)
+
+
+ ### Starting the Full Application Locally
+
+ ```bash
+  cd backend
+  docker compose -f docker-compose-local.yaml up
+```
+
+This command will build and start all services (backend, frontend, and any dependencies) together, using the .env files you configured.
+
+You don't need to start frontend or backend separately — Docker Compose handles the orchestration.
+ 
+
 ## 🚀 Deployment Strategy
 
 - **Branching Strategy**:
