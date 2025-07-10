@@ -4,6 +4,14 @@
 
 ---
 
+## 🎓 Thesis Statement
+
+**"Web service for pneumonia detection on chest X-ray images using deep learning and large language models for result interpretation"**
+
+This thesis demonstrates the integration of AI/ML capabilities with modern web technologies, DevOps tooling, and secure infrastructure to provide a production-ready medical AI assistant.
+
+---
+
 ## 📘 About the Project
 
 This project is developed as part of my bachelor thesis. The goal is to build a full-stack web application deployed on a live server and accessible via a custom domain.
@@ -78,7 +86,8 @@ Before running the application locally, make sure to create and configure enviro
   cp env.example .env
   ```
   Then edit .env to set your local config (e.g., DB_USER)
-
+  
+---
 
  ### Starting the Full Application Locally
 
@@ -107,8 +116,23 @@ You don't need to start frontend or backend separately — Docker Compose handle
 
 ---
 
-## 🎓 Thesis Statement
+## ⚖️ License & Rights
 
-**"Web service for pneumonia detection on chest X-ray images using deep learning and large language models for result interpretation"**
+© 2025 Kenan Dervišagić.  
+All rights reserved. This project and its contents are protected under copyright law.  
+Unauthorized copying, distribution, or use without explicit permission is prohibited.
 
-This thesis demonstrates the integration of AI/ML capabilities with modern web technologies, DevOps tooling, and secure infrastructure to provide a production-ready medical AI assistant.
+---
+
+## 📞 Contact
+
+For questions or collaboration, please contact me at:  
+**notkenan@gmail.com** (replace with your actual contact)
+
+---
+
+
+## 📝 Disclaimer
+
+This project is for educational and research purposes only. It is **not** a medical device and should not be used for clinical diagnosis or treatment without proper validation and certification.
+
