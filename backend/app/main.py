@@ -28,6 +28,11 @@ app.add_middleware(
 async def health():
     return {"status": "ok"}
 
+
+@api_router.post("/health", response_class=JSONResponse)
+async def health():
+    return {"status": "ok"}
+
 @api_router.get("/db-check", response_class=JSONResponse)
 async def db_check():
     try:
