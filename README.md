@@ -127,7 +127,7 @@ Unauthorized copying, distribution, or use without explicit permission is prohib
 ## 📞 Contact
 
 For questions or collaboration, please contact me at:  
-**notkenan@gmail.com** (replace with your actual contact)
+**notkenan@gmail.com**
 
 ---
 
