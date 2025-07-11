@@ -1,0 +1,52 @@
+services:
+  prometheus:
+    image: "$DOCKER_USERNAME/prometheus:$TAG"
+    container_name: prometheus
+    expose:
+      - 9090
+    networks:
+      - rtg-analysis_webnet
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=24h
+      - --storage.tsdb.retention.size=500MB
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    expose:
+      - 3000
+    networks:
+      - rtg-analysis_webnet
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    expose:
+      - 9100
+    networks:
+      - rtg-analysis_webnet
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/host'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /:/host:ro
+
+
+networks:
+  rtg-analysis_webnet:
+      external: true
+
+volumes:
+  grafana-storage:
