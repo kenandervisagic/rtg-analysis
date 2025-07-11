@@ -58,6 +58,7 @@ jobs:
           source docker-tls-setup.sh
           cd $GITHUB_WORKSPACE/.infrastructure/monitoring
           docker-compose up -d
+          docker restart nginx-gateway
         env:
           DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
