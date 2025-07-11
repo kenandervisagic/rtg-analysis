@@ -4,7 +4,9 @@ on:
   push:
     branches: [master]
     paths:
-      - '.infrastructure/**'
+      - ".infrastructure/nginx/**"
+      - ".infrastructure/docker-compose-infra.yaml"
+      - ".infrastructure/docker-compose.yaml"
 
 jobs:
   build-infra:
@@ -25,10 +27,10 @@ jobs:
       - name: Docker TLS Setup + Build Images
         run: |
           cp -r .infrastructure/* .
-        
+
           chmod +x ./docker-tls-setup.sh
           source docker-tls-setup.sh
-          
+
           cd $GITHUB_WORKSPACE/.infrastructure/nginx
           docker build -t ${{ secrets.DOCKER_USERNAME }}/nginx:${{ steps.set_output.outputs.short_sha }} .
 
@@ -53,7 +55,7 @@ jobs:
       - name: Docker TLS Setup + Docker Compose
         run: |
           cp -r .infrastructure/* .
-          
+
           chmod +x ./docker-tls-setup.sh
           source docker-tls-setup.sh
           docker-compose -f docker-compose-infra.yaml up -d
