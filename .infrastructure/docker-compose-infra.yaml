@@ -20,6 +20,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    expose:
+      - 8080
     # make sure you have this on your host machine
     volumes:
       - /home/ubuntu/website/logs:/var/log/nginx

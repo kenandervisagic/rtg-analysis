@@ -57,6 +57,15 @@ services:
     volumes:
       - /:/host:ro
 
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx-exporter
+    expose:
+      - 9113
+    command:
+      - --nginx.scrape-uri=http://nginx-gateway:8080/nginx_status
+    networks:
+      - rtg-analysis_webnet
 
 networks:
   rtg-analysis_webnet:
