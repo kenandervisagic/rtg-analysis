@@ -89,24 +89,9 @@ const Header = ({ currentStep }: HeaderProps) => {
                 <>
                     <Box display="flex" justifyContent="space-between" alignItems="center" width="100%" mb={2}>
                         <Box display="flex" alignItems="center" gap={1}>
-                            <Box
-                                sx={{
-                                    width: 36,
-                                    height: 36,
-                                    borderRadius: "50%",
-                                    background: "linear-gradient(135deg, #6366f1, #7c3aed)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    color: "#fff",
-                                    fontWeight: "bold",
-                                    fontSize: 18,
-                                }}
-                            >
-                                PA
-                            </Box>
+
                             <Typography variant="h6" color="#e2e8f0">
-                                PneumoAI
+                                PneumoAi
                             </Typography>
                         </Box>
                         <Avatar alt="Lily Bennett" src="/kd.jpg" sx={{ width: 36, height: 36 }} />
@@ -116,22 +101,7 @@ const Header = ({ currentStep }: HeaderProps) => {
             ) : (
                 <>
                     <Box flex="0 0 auto" display="flex" alignItems="center" gap={2}>
-                        <Box
-                            sx={{
-                                width: 36,
-                                height: 36,
-                                borderRadius: "50%",
-                                background: "linear-gradient(135deg, #6366f1, #7c3aed)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                color: "#fff",
-                                fontWeight: "bold",
-                                fontSize: 18,
-                            }}
-                        >
-                            PA
-                        </Box>
+
                         <Typography variant="h6" color="#e2e8f0">
                             PneumoAI
                         </Typography>
