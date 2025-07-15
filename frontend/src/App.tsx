@@ -1,37 +1,16 @@
-import {Box} from "@mui/material";
-import UploadSection from "./components/UploadSection.tsx";
-import Header from "./components/Header.tsx";
-import Footer from "./components/Footer.tsx";
-import ResultSection, {type ResultData} from "./components/ResultSection.tsx";
-import {useState} from "react";
-
-const mockedResponse: ResultData = {
-    diagnosis: "Pneumonia",
-    confidence: 87,
-    insights: [
-        "Lung opacity detected",
-        "Bilateral consolidation observed",
-        "Possible early stage infection",
-    ],
-    imageUrl: "", // will be overridden by actual uploaded image URL
-    heatmapUrl:
-        "https://images.unsplash.com/photo-1584036561584-b03c19da874c?auto=format&fit=crop&w=800&q=80", // placeholder heatmap image
-};
+import { Box, Button } from "@mui/material";
+import UploadSection, { type ResultData } from "./components/UploadSection";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import ResultSection from "./components/ResultSection";
+import { useState } from "react";
 
 function App() {
-    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
     const [resultData, setResultData] = useState<ResultData | null>(null);
 
-    const handleUploadSuccess = (imageUrl: string) => {
-        setUploadedImage(imageUrl);
-
-        // Simulate backend delay and inject mock
-        setTimeout(() => {
-            setResultData({
-                ...mockedResponse,
-                imageUrl,
-            });
-        }, 1500); // simulate analysis time
+    // This is called when UploadSection finishes uploading and has result data
+    const handleResult = (data: ResultData) => {
+        setResultData(data);
     };
 
     return (
@@ -42,22 +21,30 @@ function App() {
             fontFamily="Roboto, sans-serif"
             bgcolor="#f9f9f9"
         >
-            <Header/>
+            <Header />
             <Box flex="1" p={3}>
                 <Box display="flex" justifyContent="center" gap={4} flexWrap="wrap">
-                    {!uploadedImage &&
-                        <Box width={{xs: "100%", md: "40%"}}>
-                            <UploadSection onSuccess={handleUploadSuccess}/>
+                    {!resultData ? (
+                        <Box width={{ xs: "100%", md: "40%" }}>
+                            <UploadSection onResult={handleResult} />
                         </Box>
-                    }
-                    {resultData && (
-                        <Box width={{xs: "100%", md: "40%"}}>
-                            <ResultSection data={resultData}/>
+                    ) : (
+                        <Box width={{ xs: "100%", md: "40%" }}>
+                            <ResultSection data={resultData} />
+                            <Box mt={4} textAlign="center">
+                                <Button
+                                    variant="outlined"
+                                    onClick={() => setResultData(null)}
+                                    sx={{ textTransform: "none" }}
+                                >
+                                    Analyze Another X-Ray
+                                </Button>
+                            </Box>
                         </Box>
                     )}
                 </Box>
             </Box>
-            <Footer/>
+            <Footer />
         </Box>
     );
 }

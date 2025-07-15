@@ -1,5 +1,4 @@
-// UploadSection.tsx
-import { useRef, useState } from "react";
+import {useRef, useState, useCallback} from "react";
 import {
     Avatar,
     Box,
@@ -14,92 +13,113 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import axios from "axios";
 
-interface UploadSectionProps {
-    onSuccess: (imageUrl: string) => void;
+export interface ResultData {
+    diagnosis: string;
+    confidence: number; // 0-100 %
+    insights: string[];
+    imageUrl: string;
 }
 
-const UploadSection = ({ onSuccess }: UploadSectionProps) => {
+interface UploadSectionProps {
+    onResult: (result: ResultData) => void;
+}
+
+const baseURL = import.meta.env.VITE_API_BASE_URL || ""; // empty string means relative URL
+
+const UploadSection = ({onResult}: UploadSectionProps) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [uploaded, setUploaded] = useState(false);
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState<string | null>(null);
 
+    const reset = useCallback(() => {
+        setFile(null);
+        setPreviewUrl(null);
+        setLoading(false);
+        setProgress(0);
+        setError(null);
+    }, [previewUrl]);
+
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setError(null);
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
+            if (!["image/jpeg", "image/png", "image/jpg"].includes(selectedFile.type)) {
+                setError("Unsupported file format. Please upload JPG or PNG images.");
+                return;
+            }
             setFile(selectedFile);
             setPreviewUrl(URL.createObjectURL(selectedFile));
-            setError(null);
         }
     };
 
-    const handleUpload = async () => {
-        if (!file) return;
+    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setError(null);
+        if (event.dataTransfer.files.length > 0) {
+            const droppedFile = event.dataTransfer.files[0];
+            if (["image/jpeg", "image/png", "image/jpg"].includes(droppedFile.type)) {
+                setFile(droppedFile);
+                setPreviewUrl(URL.createObjectURL(droppedFile));
+            } else {
+                setError("Unsupported file format. Please upload JPG or PNG images.");
+            }
+        }
+    };
 
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+    };
+
+    const handleUpload = async () => {
+        if (!file) {
+            setError("Please select an image file first.");
+            return;
+        }
         setLoading(true);
         setProgress(0);
+        setError(null);
+
         const formData = new FormData();
-        formData.append("image", file);
+        formData.append("file", file);
 
         try {
-            // Simulate upload via mock endpoint - replace this with your real API call
-            await axios.post("http://localhost:8000/api/health", formData, {
+            const response = await axios.post(baseURL + "/api/predict", formData, {
+                headers: {"Content-Type": "multipart/form-data"},
                 onUploadProgress: (e) => {
                     if (e.total) {
                         setProgress(Math.round((e.loaded * 100) / e.total));
                     }
                 },
             });
-            await new Promise((res) => setTimeout(res, 600)); // fake delay
-            setUploaded(true);
-            if (previewUrl) onSuccess(previewUrl);
-        } catch (err) {
+
+            const data: ResultData = {
+                diagnosis: response.data.result,
+                confidence: Math.round(response.data.confidence * 100), // convert 0-1 to 0-100%
+                insights:
+                    response.data.result === "PNEUMONIA"
+                        ? ["Bilateral pneumonia with visible consolidation"]
+                        : ["No signs of pneumonia detected."],
+                imageUrl: previewUrl!,
+            };
+
+            onResult(data);
+            reset();
+        } catch (uploadError) {
             setError("Upload failed. Please try again.");
-            // TODO: handle errors
-            console.log(error)
-            console.log(err)
+            console.error("Upload error:", uploadError);
+            setLoading(false);
+            setProgress(0);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleClick = () => inputRef.current?.click();
-
-    if (loading) {
-        return (
-            <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                height={300}
-            >
-                <CircularProgress size={48} color="primary" />
-                <Typography mt={2} color="text.secondary">
-                    Analyzing X-ray...
-                </Typography>
-                <Box width="100%" mt={2}>
-                    <LinearProgress variant="determinate" value={progress} />
-                </Box>
-            </Box>
-        );
-    }
-
-    if (uploaded) {
-        return (
-            <Box textAlign="center">
-                <Typography variant="h6" color="primary">
-                    Upload complete!
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    Your results are now available.
-                </Typography>
-            </Box>
-        );
-    }
+    const handleClick = () => {
+        inputRef.current?.click();
+    };
 
     return (
         <Paper
@@ -108,11 +128,12 @@ const UploadSection = ({ onSuccess }: UploadSectionProps) => {
                 padding: 4,
                 borderRadius: 4,
                 backgroundColor: "#ffffff",
+                userSelect: "none",
             }}
         >
             <input
                 type="file"
-                accept="image/jpeg,image/png"
+                accept="image/jpeg,image/png,image/jpg"
                 hidden
                 ref={inputRef}
                 onChange={handleFileSelect}
@@ -131,21 +152,23 @@ const UploadSection = ({ onSuccess }: UploadSectionProps) => {
                     margin="0 auto"
                     mb={3}
                     onClick={handleClick}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
                     sx={{
                         cursor: "pointer",
                         transition: "0.3s",
-                        "&:hover": { borderColor: "#90a4ae" },
+                        "&:hover": {borderColor: "#90a4ae"},
                     }}
                 >
-                    <CloudUploadIcon sx={{ fontSize: 50, color: "#1565c0" }} />
-                    <Typography variant="body1" color="#1565c0" mt={1}>
-                        Upload Image
+                    <CloudUploadIcon sx={{fontSize: 50, color: "#1565c0"}}/>
+                    <Typography variant="body1" color="#1565c0" mt={1} textAlign="center">
+                        Drag & Drop or Click to upload your chest X-ray (JPG, PNG, JPEG)
                     </Typography>
                 </Box>
             )}
 
             {previewUrl && (
-                <Box mb={3} textAlign="center">
+                <Box mb={3} textAlign="center" position="relative">
                     <img
                         src={previewUrl}
                         alt="X-ray preview"
@@ -156,12 +179,32 @@ const UploadSection = ({ onSuccess }: UploadSectionProps) => {
                             border: "1px solid #ccc",
                         }}
                     />
+                    <Button
+                        size="small"
+                        color="error"
+                        sx={{position: "absolute", top: 8, right: 8}}
+                        onClick={reset}
+                    >
+                        Remove
+                    </Button>
                 </Box>
             )}
 
-            {!previewUrl && (
-                <Typography variant="body2" color="text.secondary" align="center" mb={3}>
-                    Drag & drop or click to select your chest X-ray (JPG, PNG)
+            {loading && (
+                <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
+                    <CircularProgress size={48} color="primary"/>
+                    <Typography mt={2} color="text.secondary">
+                        Analyzing X-ray...
+                    </Typography>
+                    <Box width="100%" mt={2}>
+                        <LinearProgress variant="determinate" value={progress}/>
+                    </Box>
+                </Box>
+            )}
+
+            {error && (
+                <Typography color="error" variant="body2" mb={2} textAlign="center">
+                    {error}
                 </Typography>
             )}
 
@@ -172,7 +215,7 @@ const UploadSection = ({ onSuccess }: UploadSectionProps) => {
 
                 <Stack spacing={1.5}>
                     {[
-                        "Image formats: JPEG, PNG",
+                        "Image formats: JPEG, PNG, JPG",
                         "Minimum resolution: 512×512 px",
                         "Ensure a clear, unobstructed chest view",
                     ].map((text, index) => (
@@ -185,7 +228,7 @@ const UploadSection = ({ onSuccess }: UploadSectionProps) => {
                                     mr: 1,
                                 }}
                             >
-                                <CheckCircleIcon sx={{ color: "#81c784", fontSize: 18 }} />
+                                <CheckCircleIcon sx={{color: "#81c784", fontSize: 18}}/>
                             </Avatar>
                             <Typography variant="body2" color="text.primary">
                                 {text}
@@ -199,16 +242,17 @@ const UploadSection = ({ onSuccess }: UploadSectionProps) => {
                 <Button
                     variant="contained"
                     fullWidth
-                    onClick={previewUrl ? handleUpload : handleClick}
+                    onClick={file ? handleUpload : handleClick}
                     sx={{
                         backgroundColor: "#1565c0",
                         borderRadius: 50,
                         textTransform: "none",
                         fontWeight: "bold",
-                        "&:hover": { backgroundColor: "#0d47a1" },
+                        "&:hover": {backgroundColor: "#0d47a1"},
                     }}
+                    disabled={loading}
                 >
-                    {previewUrl ? "Analyze X-Ray" : "Upload X-Ray"}
+                    {file ? "Analyze X-Ray" : "Upload X-Ray"}
                 </Button>
             </Box>
         </Paper>
