@@ -22,11 +22,12 @@ export interface ResultData {
 
 interface UploadSectionProps {
     onResult: (result: ResultData) => void;
+    setCurrentStep: (step: string) => void;
 }
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || ""; // empty string means relative URL
 
-const UploadSection = ({onResult}: UploadSectionProps) => {
+const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -106,6 +107,8 @@ const UploadSection = ({onResult}: UploadSectionProps) => {
             };
 
             onResult(data);
+            setCurrentStep("Results");
+
             reset();
         } catch (uploadError) {
             setError("Upload failed. Please try again.");
@@ -119,16 +122,20 @@ const UploadSection = ({onResult}: UploadSectionProps) => {
 
     const handleClick = () => {
         inputRef.current?.click();
+
     };
 
     return (
         <Paper
-            elevation={4}
+            elevation={8}
             sx={{
                 padding: 4,
-                borderRadius: 4,
-                backgroundColor: "#ffffff",
+                borderRadius: 6,
+                backgroundColor: "#0f172a", // dark navy
                 userSelect: "none",
+                margin: "0 auto",
+                boxShadow: "0 0 24px rgba(100,116,139,0.1)",
+                border: "1px solid #1e293b",
             }}
         >
             <input
@@ -145,10 +152,10 @@ const UploadSection = ({onResult}: UploadSectionProps) => {
                     flexDirection="column"
                     alignItems="center"
                     justifyContent="center"
-                    border="2px dashed #b0bec5"
-                    borderRadius="10%"
-                    width={300}
-                    height={200}
+                    border="2px dashed #6366f1"
+                    borderRadius={5}
+                    width="100%"
+                    height={280}
                     margin="0 auto"
                     mb={3}
                     onClick={handleClick}
@@ -156,14 +163,42 @@ const UploadSection = ({onResult}: UploadSectionProps) => {
                     onDragOver={handleDragOver}
                     sx={{
                         cursor: "pointer",
-                        transition: "0.3s",
-                        "&:hover": {borderColor: "#90a4ae"},
+                        backgroundColor: "#1e293b",
+                        transition: "all 0.3s ease",
+                        "&:hover": {
+                            borderColor: "#7c3aed",
+                            backgroundColor: "#1f2a3c",
+                            boxShadow: "0 0 10px rgba(124,58,237,0.3)",
+                        },
                     }}
                 >
-                    <CloudUploadIcon sx={{fontSize: 50, color: "#1565c0"}}/>
-                    <Typography variant="body1" color="#1565c0" mt={1} textAlign="center">
-                        Drag & Drop or Click to upload your chest X-ray (JPG, PNG, JPEG)
+                    <Typography variant="h6" color="#cbd5e1" mb={1}>
+                        Add an X-ray file
                     </Typography>
+
+                    <Typography variant="body2" color="#64748b" mb={2}>
+                        Allowed formats: DICOM, PDF, PNG, JPEG.
+                    </Typography>
+
+                    <Button
+                        variant="contained"
+                        startIcon={<CloudUploadIcon/>}
+                        sx={{
+                            background: "linear-gradient(90deg, #6366f1, #7c3aed)",
+                            borderRadius: "9999px",
+                            px: 4,
+                            py: 1.5,
+                            fontWeight: "bold",
+                            textTransform: "none",
+                            boxShadow: "0 0 10px rgba(124,58,237,0.3)",
+                            "&:hover": {
+                                background: "linear-gradient(90deg, #7c3aed, #6366f1)",
+                                boxShadow: "0 0 14px rgba(124,58,237,0.5)",
+                            },
+                        }}
+                    >
+                        Add file
+                    </Button>
                 </Box>
             )}
 
@@ -174,15 +209,21 @@ const UploadSection = ({onResult}: UploadSectionProps) => {
                         alt="X-ray preview"
                         style={{
                             maxWidth: "100%",
-                            maxHeight: 200,
-                            borderRadius: 8,
-                            border: "1px solid #ccc",
+                            maxHeight: 280,
+                            borderRadius: 12,
+                            border: "1px solid #334155",
                         }}
                     />
                     <Button
                         size="small"
                         color="error"
-                        sx={{position: "absolute", top: 8, right: 8}}
+                        sx={{
+                            position: "absolute",
+                            top: 12,
+                            right: 12,
+                            backgroundColor: "#ef4444",
+                            "&:hover": {backgroundColor: "#dc2626"},
+                        }}
                         onClick={reset}
                     >
                         Remove
@@ -191,25 +232,34 @@ const UploadSection = ({onResult}: UploadSectionProps) => {
             )}
 
             {loading && (
-                <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
-                    <CircularProgress size={48} color="primary"/>
-                    <Typography mt={2} color="text.secondary">
+                <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+                    <CircularProgress size={48} sx={{color: "#6366f1"}}/>
+                    <Typography mt={2} color="#cbd5e1">
                         Analyzing X-ray...
                     </Typography>
                     <Box width="100%" mt={2}>
-                        <LinearProgress variant="determinate" value={progress}/>
+                        <LinearProgress
+                            variant="determinate"
+                            value={progress}
+                            sx={{
+                                backgroundColor: "#334155",
+                                "& .MuiLinearProgress-bar": {
+                                    backgroundColor: "#7c3aed",
+                                },
+                            }}
+                        />
                     </Box>
                 </Box>
             )}
 
             {error && (
-                <Typography color="error" variant="body2" mb={2} textAlign="center">
+                <Typography color="#ef4444" variant="body2" mb={2} textAlign="center">
                     {error}
                 </Typography>
             )}
 
             <Box mt={2}>
-                <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#1565c0">
+                <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#7c3aed">
                     Upload Guidelines
                 </Typography>
 
@@ -222,15 +272,16 @@ const UploadSection = ({onResult}: UploadSectionProps) => {
                         <Box key={index} display="flex" alignItems="center">
                             <Avatar
                                 sx={{
-                                    bgcolor: "#e8f5e9",
-                                    width: 23,
-                                    height: 23,
+                                    bgcolor: "#1e293b",
+                                    width: 24,
+                                    height: 24,
                                     mr: 1,
+                                    border: "1px solid #334155",
                                 }}
                             >
-                                <CheckCircleIcon sx={{color: "#81c784", fontSize: 18}}/>
+                                <CheckCircleIcon sx={{color: "#10b981", fontSize: 20}}/>
                             </Avatar>
-                            <Typography variant="body2" color="text.primary">
+                            <Typography variant="body2" color="#cbd5e1">
                                 {text}
                             </Typography>
                         </Box>
@@ -244,11 +295,16 @@ const UploadSection = ({onResult}: UploadSectionProps) => {
                     fullWidth
                     onClick={file ? handleUpload : handleClick}
                     sx={{
-                        backgroundColor: "#1565c0",
-                        borderRadius: 50,
-                        textTransform: "none",
+                        background: "linear-gradient(90deg, #6366f1, #7c3aed)",
+                        borderRadius: "9999px",
+                        py: 1.5,
                         fontWeight: "bold",
-                        "&:hover": {backgroundColor: "#0d47a1"},
+                        textTransform: "none",
+                        color: "#f8fafc",
+                        "&:hover": {
+                            background: "linear-gradient(90deg, #7c3aed, #6366f1)",
+                            boxShadow: "0 0 14px rgba(124,58,237,0.4)",
+                        },
                     }}
                     disabled={loading}
                 >
@@ -257,6 +313,7 @@ const UploadSection = ({onResult}: UploadSectionProps) => {
             </Box>
         </Paper>
     );
+
 };
 
 export default UploadSection;

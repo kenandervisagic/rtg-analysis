@@ -1,12 +1,13 @@
-import { Box, Button } from "@mui/material";
-import UploadSection, { type ResultData } from "./components/UploadSection";
+import {Box} from "@mui/material";
+import UploadSection, {type ResultData} from "./components/UploadSection";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ResultSection from "./components/ResultSection";
-import { useState } from "react";
+import {useState} from "react";
 
 function App() {
     const [resultData, setResultData] = useState<ResultData | null>(null);
+    const [currentStep, setCurrentStep] = useState("Scan");
 
     // This is called when UploadSection finishes uploading and has result data
     const handleResult = (data: ResultData) => {
@@ -19,32 +20,31 @@ function App() {
             flexDirection="column"
             minHeight="100vh"
             fontFamily="Roboto, sans-serif"
-            bgcolor="#f9f9f9"
+            bgcolor="#0f172a"
         >
-            <Header />
-            <Box flex="1" p={3}>
-                <Box display="flex" justifyContent="center" gap={4} flexWrap="wrap">
-                    {!resultData ? (
-                        <Box width={{ xs: "100%", md: "40%" }}>
-                            <UploadSection onResult={handleResult} />
-                        </Box>
-                    ) : (
-                        <Box width={{ xs: "100%", md: "40%" }}>
-                            <ResultSection data={resultData} />
-                            <Box mt={4} textAlign="center">
-                                <Button
-                                    variant="outlined"
-                                    onClick={() => setResultData(null)}
-                                    sx={{ textTransform: "none" }}
-                                >
-                                    Analyze Another X-Ray
-                                </Button>
-                            </Box>
-                        </Box>
-                    )}
-                </Box>
+            <Header currentStep={currentStep}/>
+            <Box
+                flex="1"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                px={2}
+                py={4}
+                sx={{
+                    backgroundColor: "#0f172a",
+                }}
+            >
+                {!resultData ? (
+                    <Box width="100%" maxWidth={800}>
+                        <UploadSection onResult={handleResult} setCurrentStep={setCurrentStep}/>
+                    </Box>
+                ) : (
+                    <Box width="100%" maxWidth={600}>
+                        <ResultSection data={resultData} setCurrentStep={setCurrentStep} setResultData={setResultData}/>
+                    </Box>
+                )}
             </Box>
-            <Footer />
+            <Footer/>
         </Box>
     );
 }

@@ -9,9 +9,10 @@ function Footer() {
                 py: 2,
                 px: 3,
                 textAlign: 'center',
-                backgroundColor: '#e3f2fd',
-                color: '#0d47a1',
-                fontSize: '0.875rem'
+                backgroundColor: '##333',
+                color: '#94a3b8',
+                fontSize: '0.875rem',
+                borderTop: "1px solid #1e293b"
             }}
         >
             <Typography variant="body2">
