@@ -8,6 +8,7 @@ from PIL import Image
 import numpy as np
 from fastapi import Request
 import os
+import requests
 
 # Default is production — docs disabled unless explicitly running locally
 is_local = os.getenv("ENV") == "local"
@@ -26,9 +27,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+MODEL_URL = "https://minio.kdidp.art/model/resnet50_pneumonia_optimized.keras"
+MODEL_PATH = "resnet50_pneumonia_optimized.keras"
+
+def download_model_if_needed():
+    if not os.path.exists(MODEL_PATH):
+        print("📥 Downloading model from MinIO...")
+        response = requests.get(MODEL_URL)
+        response.raise_for_status()
+        with open(MODEL_PATH, 'wb') as f:
+            f.write(response.content)
+        print("✅ Model downloaded successfully.")
+    else:
+        print("✅ Model already exists, skipping download.")
+
+download_model_if_needed()
+
 model = keras.models.load_model("resnet50_pneumonia_optimized.keras")
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
+
+
 
 def allowed_file(filename: str) -> bool:
     return filename.split(".")[-1].lower() in ALLOWED_EXTENSIONS
