@@ -1,6 +1,6 @@
 import { Avatar, Box, Typography, useMediaQuery } from "@mui/material";
 
-const steps = ["Skeniranje", "Rezultati", "Izvoz", "Kontakt"];
+const steps = ["Skeniranje", "Rezultati", "Izvoz"];
 
 interface HeaderProps {
     currentStep: string;

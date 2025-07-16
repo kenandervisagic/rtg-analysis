@@ -1,13 +1,4 @@
-import {
-    Box,
-    Button,
-    Card,
-    Chip,
-    Divider,
-    LinearProgress,
-    Stack,
-    Typography
-} from "@mui/material";
+import {Box, Button, Card, Chip, Divider, LinearProgress, Stack, Typography} from "@mui/material";
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import InsightsIcon from '@mui/icons-material/Insights';
@@ -23,9 +14,16 @@ interface ResultSectionProps {
     data: ResultData;
     setCurrentStep: (step: string) => void;
     setResultData: (data: ResultData | null) => void;
+    onExportSuccess: () => void;
+
 }
 
-const ResultSection = ({data, setCurrentStep, setResultData}: ResultSectionProps) => {
+const ResultSection = ({data, setCurrentStep, setResultData, onExportSuccess}: ResultSectionProps) => {
+    const handleExport = () => {
+        onExportSuccess(); // 👈 Call the screen switch here
+        setCurrentStep("Izvoz");
+    };
+
     return (
         <Card
             elevation={8}
@@ -163,6 +161,7 @@ const ResultSection = ({data, setCurrentStep, setResultData}: ResultSectionProps
                     <Button
                         variant="contained"
                         fullWidth
+                        onClick={handleExport}
                         sx={{
                             background: "linear-gradient(90deg, #6366f1, #7c3aed)",
                             color: "#fff",

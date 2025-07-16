@@ -83,6 +83,23 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
         }
     };
 
+
+    const smoothIncreaseProgress = (from: number, to: number, step = 2, delay = 15) => {
+        return new Promise<void>((resolve) => {
+            let current = from;
+            const intervalId = setInterval(() => {
+                current += step;
+                if (current >= to) {
+                    setProgress(to);
+                    clearInterval(intervalId);
+                    resolve();
+                } else {
+                    setProgress(current);
+                }
+            }, delay);
+        });
+    };
+
     const handleUpload = async () => {
         if (!file) {
             setError("Molimo prvo odaberite sliku.");
@@ -93,20 +110,27 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
         setError(null);
 
         const formData = new FormData();
+
+        const LOADING_DURATION = 9000;
+        const startTime = Date.now();
+
+        let lastProgress = 0;
+        const timer = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const percent = Math.min((elapsed / LOADING_DURATION) * 100, 99);
+            lastProgress = percent;
+            setProgress(percent);
+        }, 100);
+
         formData.append("file", file);
 
         try {
             const response = await axios.post(baseURL + "/api/predict", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
-                onUploadProgress: (e) => {
-                    if (e.total) {
-                        setProgress(Math.round((e.loaded * 100) / e.total));
-                    }
-                },
             });
 
             const result = response.data.result;
-            const confidence = response.data.confidence; // očekuje se float 0-1
+            const confidence = response.data.confidence; // float 0-1
             const insights = response.data.insights || [];
 
             const detailedDiagnosis = generateDetailedDiagnosis(result, confidence);
@@ -118,19 +142,22 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                 imageUrl: previewUrl!,
             };
 
+            clearInterval(timer);
+            // Animate smoothly from lastProgress to 100
+            await smoothIncreaseProgress(lastProgress, 100);
+            await new Promise(res => setTimeout(res, 600));
             onResult(data);
             setCurrentStep("Rezultati");
-
             reset();
         } catch (uploadError) {
             setError("Slanje nije uspjelo. Molimo pokušajte ponovo.");
+            clearInterval(timer);
             console.error("Greška prilikom slanja:", uploadError);
             setLoading(false);
             setProgress(0);
-        } finally {
-            setLoading(false);
         }
     };
+
 
     const handleClick = () => {
         inputRef.current?.click();
@@ -305,7 +332,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                     }}
                     disabled={loading}
                 >
-                    {file ? "Analiziraj X-Ray snimak" : "Pošalji X-Ray snimak"}
+                    {file ? "Analiziraj X-Ray snimak" : "Učitaj X-Ray snimak"}
                 </Button>
             </Box>
         </Paper>

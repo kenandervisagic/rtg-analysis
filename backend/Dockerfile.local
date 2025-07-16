@@ -4,6 +4,16 @@ WORKDIR /app
 
 COPY requirements.txt .
 
+# Install system dependencies first
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libpango-1.0-0 \
+        libpangoft2-1.0-0 \
+        libcairo2 \
+        libffi-dev \
+        shared-mime-info && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt

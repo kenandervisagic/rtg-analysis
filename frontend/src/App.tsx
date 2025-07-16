@@ -3,13 +3,14 @@ import UploadSection, {type ResultData} from "./components/UploadSection";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ResultSection from "./components/ResultSection";
+import ReportPreview from "./components/ReportPreview";
 import {useState} from "react";
 
 function App() {
     const [resultData, setResultData] = useState<ResultData | null>(null);
     const [currentStep, setCurrentStep] = useState("Skeniranje");
+    const [showReportPreview, setShowReportPreview] = useState(false);
 
-    // This is called when UploadSection finishes uploading and has result data
     const handleResult = (data: ResultData) => {
         setResultData(data);
     };
@@ -30,19 +31,28 @@ function App() {
                 justifyContent="center"
                 px={2}
                 py={4}
-                sx={{
-                    backgroundColor: "#0f172a",
-                }}
+                sx={{backgroundColor: "#0f172a"}}
             >
-                {!resultData ? (
-                    <Box width="100%" maxWidth={800}>
+                <Box width="100%" maxWidth={showReportPreview ? 600 : 800}>
+                    {!resultData ? (
                         <UploadSection onResult={handleResult} setCurrentStep={setCurrentStep}/>
-                    </Box>
-                ) : (
-                    <Box width="100%" maxWidth={600}>
-                        <ResultSection data={resultData} setCurrentStep={setCurrentStep} setResultData={setResultData}/>
-                    </Box>
-                )}
+                    ) : showReportPreview ? (
+                        <ReportPreview
+                            data={resultData}
+                            onBack={() => {
+                                setShowReportPreview(false);
+                                setCurrentStep("Rezultati")
+                            }}
+                        />
+                    ) : (
+                        <ResultSection
+                            data={resultData}
+                            setCurrentStep={setCurrentStep}
+                            setResultData={setResultData}
+                            onExportSuccess={() => setShowReportPreview(true)}
+                        />
+                    )}
+                </Box>
             </Box>
             <Footer/>
         </Box>
