@@ -1,6 +1,6 @@
 import { Avatar, Box, Typography, useMediaQuery } from "@mui/material";
 
-const steps = ["Scan", "Results", "Export", "Contact"];
+const steps = ["Skeniranje", "Rezultati", "Izvoz", "Kontakt"];
 
 interface HeaderProps {
     currentStep: string;
@@ -89,7 +89,6 @@ const Header = ({ currentStep }: HeaderProps) => {
                 <>
                     <Box display="flex" justifyContent="space-between" alignItems="center" width="100%" mb={2}>
                         <Box display="flex" alignItems="center" gap={1}>
-
                             <Typography variant="h6" color="#e2e8f0">
                                 PneumoAi
                             </Typography>
@@ -101,7 +100,6 @@ const Header = ({ currentStep }: HeaderProps) => {
             ) : (
                 <>
                     <Box flex="0 0 auto" display="flex" alignItems="center" gap={2}>
-
                         <Typography variant="h6" color="#e2e8f0">
                             PneumoAI
                         </Typography>

@@ -73,5 +73,6 @@ jobs:
           POSTGRES_DB: ${{secrets.POSTGRES_DATABASE}}
           POSTGRES_USER: ${{secrets.POSTGRES_USERNAME}}
           POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
+          OPENAI_API_KEY: ${{secrets.OPENAI_API_KEY}}
 
 

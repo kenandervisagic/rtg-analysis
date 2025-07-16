@@ -25,7 +25,7 @@ interface UploadSectionProps {
     setCurrentStep: (step: string) => void;
 }
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || ""; // empty string means relative URL
+const baseURL = import.meta.env.VITE_API_BASE_URL || ""; // prazno znači relativni URL
 
 const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -48,7 +48,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             if (!["image/jpeg", "image/png", "image/jpg"].includes(selectedFile.type)) {
-                setError("Unsupported file format. Please upload JPG or PNG images.");
+                setError("Nepodržani format datoteke. Molimo pošaljite JPG ili PNG slike.");
                 return;
             }
             setFile(selectedFile);
@@ -65,7 +65,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                 setFile(droppedFile);
                 setPreviewUrl(URL.createObjectURL(droppedFile));
             } else {
-                setError("Unsupported file format. Please upload JPG or PNG images.");
+                setError("Nepodržani format datoteke. Molimo pošaljite JPG ili PNG slike.");
             }
         }
     };
@@ -74,9 +74,18 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
         event.preventDefault();
     };
 
+    const generateDetailedDiagnosis = (result: string, confidence: number): string => {
+        const percent = Math.round(confidence * 100);
+        if (result === "PNEUMONIA") {
+            return `Pneumonija je otkrivena sa sigurnošću od ${percent}%.`;
+        } else {
+            return `Nema znakova pneumonije sa pouzdanošću od ${percent}%.`;
+        }
+    };
+
     const handleUpload = async () => {
         if (!file) {
-            setError("Please select an image file first.");
+            setError("Molimo prvo odaberite sliku.");
             return;
         }
         setLoading(true);
@@ -88,7 +97,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
 
         try {
             const response = await axios.post(baseURL + "/api/predict", formData, {
-                headers: {"Content-Type": "multipart/form-data"},
+                headers: { "Content-Type": "multipart/form-data" },
                 onUploadProgress: (e) => {
                     if (e.total) {
                         setProgress(Math.round((e.loaded * 100) / e.total));
@@ -96,23 +105,26 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                 },
             });
 
+            const result = response.data.result;
+            const confidence = response.data.confidence; // očekuje se float 0-1
+            const insights = response.data.insights || [];
+
+            const detailedDiagnosis = generateDetailedDiagnosis(result, confidence);
+
             const data: ResultData = {
-                diagnosis: response.data.result,
-                confidence: Math.round(response.data.confidence * 100), // convert 0-1 to 0-100%
-                insights:
-                    response.data.result === "PNEUMONIA"
-                        ? ["Bilateral pneumonia with visible consolidation"]
-                        : ["No signs of pneumonia detected."],
+                diagnosis: detailedDiagnosis,
+                confidence: Math.round(confidence * 100),
+                insights,
                 imageUrl: previewUrl!,
             };
 
             onResult(data);
-            setCurrentStep("Results");
+            setCurrentStep("Rezultati");
 
             reset();
         } catch (uploadError) {
-            setError("Upload failed. Please try again.");
-            console.error("Upload error:", uploadError);
+            setError("Slanje nije uspjelo. Molimo pokušajte ponovo.");
+            console.error("Greška prilikom slanja:", uploadError);
             setLoading(false);
             setProgress(0);
         } finally {
@@ -122,7 +134,6 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
 
     const handleClick = () => {
         inputRef.current?.click();
-
     };
 
     return (
@@ -131,7 +142,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
             sx={{
                 padding: 4,
                 borderRadius: 6,
-                backgroundColor: "#0f172a", // dark navy
+                backgroundColor: "#0f172a", // tamno plava
                 userSelect: "none",
                 margin: "0 auto",
                 boxShadow: "0 0 24px rgba(100,116,139,0.1)",
@@ -173,16 +184,16 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                     }}
                 >
                     <Typography variant="h6" color="#cbd5e1" mb={1}>
-                        Add an X-ray file
+                        Dodajte X-Ray snimak
                     </Typography>
 
                     <Typography variant="body2" color="#64748b" mb={2}>
-                        Allowed formats: DICOM, PDF, PNG, JPEG.
+                        Dozvoljeni formati: JPG, PNG, JPEG.
                     </Typography>
 
                     <Button
                         variant="contained"
-                        startIcon={<CloudUploadIcon/>}
+                        startIcon={<CloudUploadIcon />}
                         sx={{
                             background: "linear-gradient(90deg, #6366f1, #7c3aed)",
                             borderRadius: "9999px",
@@ -197,7 +208,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                             },
                         }}
                     >
-                        Add file
+                        Dodaj datoteku
                     </Button>
                 </Box>
             )}
@@ -206,7 +217,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                 <Box mb={3} textAlign="center" position="relative">
                     <img
                         src={previewUrl}
-                        alt="X-ray preview"
+                        alt="Pregled X-zrake"
                         style={{
                             maxWidth: "100%",
                             maxHeight: 280,
@@ -214,28 +225,14 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                             border: "1px solid #334155",
                         }}
                     />
-                    <Button
-                        size="small"
-                        color="error"
-                        sx={{
-                            position: "absolute",
-                            top: 12,
-                            right: 12,
-                            backgroundColor: "#ef4444",
-                            "&:hover": {backgroundColor: "#dc2626"},
-                        }}
-                        onClick={reset}
-                    >
-                        Remove
-                    </Button>
                 </Box>
             )}
 
             {loading && (
                 <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
-                    <CircularProgress size={48} sx={{color: "#6366f1"}}/>
+                    <CircularProgress size={48} sx={{ color: "#6366f1" }} />
                     <Typography mt={2} color="#cbd5e1">
-                        Analyzing X-ray...
+                        Analiziram X-Ray snimak...
                     </Typography>
                     <Box width="100%" mt={2}>
                         <LinearProgress
@@ -260,14 +257,14 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
 
             <Box mt={2}>
                 <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#7c3aed">
-                    Upload Guidelines
+                    Upute za slanje
                 </Typography>
 
                 <Stack spacing={1.5}>
                     {[
-                        "Image formats: JPEG, PNG, JPG",
-                        "Minimum resolution: 512×512 px",
-                        "Ensure a clear, unobstructed chest view",
+                        "Formati slike: JPEG, PNG, JPG",
+                        "Minimalna rezolucija: 512×512 px",
+                        "Osigurajte jasan, neometan prikaz grudnog koša",
                     ].map((text, index) => (
                         <Box key={index} display="flex" alignItems="center">
                             <Avatar
@@ -279,7 +276,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                                     border: "1px solid #334155",
                                 }}
                             >
-                                <CheckCircleIcon sx={{color: "#10b981", fontSize: 20}}/>
+                                <CheckCircleIcon sx={{ color: "#10b981", fontSize: 20 }} />
                             </Avatar>
                             <Typography variant="body2" color="#cbd5e1">
                                 {text}
@@ -308,12 +305,11 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                     }}
                     disabled={loading}
                 >
-                    {file ? "Analyze X-Ray" : "Upload X-Ray"}
+                    {file ? "Analiziraj X-Ray snimak" : "Pošalji X-Ray snimak"}
                 </Button>
             </Box>
         </Paper>
     );
-
 };
 
 export default UploadSection;

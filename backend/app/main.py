@@ -9,9 +9,12 @@ import numpy as np
 from fastapi import Request
 import os
 import requests
+from openai import OpenAI
+import traceback
 
-# Default is production — docs disabled unless explicitly running locally
 is_local = os.getenv("ENV") == "local"
+
+client = OpenAI()
 app = FastAPI(
     docs_url="/api/docs" if is_local else None,
     redoc_url="/api/redoc" if is_local else None,
@@ -30,6 +33,7 @@ app.add_middleware(
 MODEL_URL = "https://minio.kdidp.art/model/resnet50_pneumonia_optimized.keras"
 MODEL_PATH = "resnet50_pneumonia_optimized.keras"
 
+
 def download_model_if_needed():
     if not os.path.exists(MODEL_PATH):
         print("📥 Downloading model from MinIO...")
@@ -41,12 +45,12 @@ def download_model_if_needed():
     else:
         print("✅ Model already exists, skipping download.")
 
+
 download_model_if_needed()
 
 model = keras.models.load_model("resnet50_pneumonia_optimized.keras")
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
-
 
 
 def allowed_file(filename: str) -> bool:
@@ -59,6 +63,7 @@ def preprocess_image(file: bytes) -> np.ndarray:
     img_array = np.array(img).astype("float32") / 255.0
     return np.expand_dims(img_array, axis=0)
 
+
 # Health check
 @api_router.get("/health", response_class=JSONResponse)
 async def health():
@@ -69,23 +74,52 @@ async def health():
 async def predict(file: UploadFile = File(...)):
     try:
         contents = await file.read()
+
         if not allowed_file(file.filename):
             raise HTTPException(status_code=400, detail="Invalid file type. Only JPG/PNG allowed.")
+
         img_tensor = preprocess_image(contents)
         prediction = model.predict(img_tensor)[0][0]
 
         result = "PNEUMONIA" if prediction > 0.5 else "NORMAL"
         confidence = float(prediction) if prediction > 0.5 else 1 - float(prediction)
+        confidence_percent = round(confidence * 100, 1)
+        llm_prompt = (
+            f"Duboko učenje je analiziralo snimak grudnog koša i dijagnosticiralo **{result}** "
+            f"sa sigurnošću od **{confidence_percent:.1f}%**. "
+            f"Molimo napišite sažet profesionalni klinički izvještaj za radiologa ili pulmologa. "
+            f"Sažmite nalaz, interpretirajte nivo sigurnosti, navedite relevantne daljnje pretrage ili snimanja "
+            f"i predložite kliničke preporuke – sve u jedinstvenom koherentnom pasusu bez nabrajanja ili naslova."
+            f"Molim sažeti nalaz u kraćem, jasnom odlomku bez nepotrebnih detalja."
+
+        )
+
+        chat_response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system",
+                 "content": "Vi ste radiolog koji pruža profesionalne dijagnostičke nalaze za druge ljekare."},
+                {"role": "user", "content": llm_prompt}
+            ],
+            temperature=0.3,
+            max_tokens=300,  # smaller to encourage brevity
+        )
+
+        insight = chat_response.choices[0].message.content.strip()
 
         return {
             "result": result,
-            "confidence": round(confidence, 3)
+            "confidence": round(confidence, 3),
+            "insights": [insight],
         }
-
     except Exception as e:
+        print("Exception in /predict:", e)
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
+
 app.include_router(api_router, prefix="/api")
+
 
 @app.middleware("http")
 async def limit_upload_size(request: Request, call_next):

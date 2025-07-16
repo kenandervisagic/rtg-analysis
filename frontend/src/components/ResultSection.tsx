@@ -32,7 +32,7 @@ const ResultSection = ({data, setCurrentStep, setResultData}: ResultSectionProps
             sx={{
                 p: 4,
                 borderRadius: 6,
-                backgroundColor: "#0f172a", // dark navy background
+                backgroundColor: "#0f172a",
                 color: "#cbd5e1",
                 boxShadow: "0 0 24px rgba(124, 58, 237, 0.3)",
                 border: "1px solid #334155",
@@ -42,7 +42,7 @@ const ResultSection = ({data, setCurrentStep, setResultData}: ResultSectionProps
                 <Box textAlign="center">
                     <img
                         src={data.imageUrl}
-                        alt="X-ray"
+                        alt="X-zraka"
                         style={{
                             width: "100%",
                             objectFit: "contain",
@@ -52,7 +52,7 @@ const ResultSection = ({data, setCurrentStep, setResultData}: ResultSectionProps
                         }}
                     />
                     <Typography variant="caption" mt={1} display="block" color="#94a3b8">
-                        Analyzed X-ray
+                        Analizirana X-zraka
                     </Typography>
                 </Box>
 
@@ -69,20 +69,17 @@ const ResultSection = ({data, setCurrentStep, setResultData}: ResultSectionProps
                             fontSize="small"
                             sx={{mr: 1, verticalAlign: "middle", color: "#7c3aed"}}
                         />
-                        Diagnosis
+                        Dijagnoza
                     </Typography>
                     <Chip
                         label={data.diagnosis}
                         sx={{
-                            backgroundColor: "#7c3aed33", // translucent purple
+                            backgroundColor: "#7c3aed33",
                             color: "#e0d7ff",
                             fontWeight: 500,
                             fontSize: "0.75rem",
                         }}
                     />
-                    <Typography variant="body2" mt={1} color="#94a3b8">
-                        {data.insights.join("; ")}
-                    </Typography>
                 </Box>
 
                 <Box>
@@ -96,7 +93,7 @@ const ResultSection = ({data, setCurrentStep, setResultData}: ResultSectionProps
                             fontSize="small"
                             sx={{mr: 1, verticalAlign: "middle", color: "#7c3aed"}}
                         />
-                        Confidence Score
+                        Stepen sigurnosti
                     </Typography>
                     <Typography variant="h6" color="#7c3aed" fontWeight="bold">
                         {data.confidence}%
@@ -127,7 +124,7 @@ const ResultSection = ({data, setCurrentStep, setResultData}: ResultSectionProps
                             fontSize="small"
                             sx={{mr: 1, verticalAlign: "middle", color: "#7c3aed"}}
                         />
-                        AI Insights
+                        AI uvid
                     </Typography>
                     <Stack
                         component="ul"
@@ -142,13 +139,12 @@ const ResultSection = ({data, setCurrentStep, setResultData}: ResultSectionProps
                     </Stack>
                 </Box>
 
-                {/* Action Buttons */}
                 <Stack direction="row" spacing={2} justifyContent="space-between" pt={2}>
                     <Button
                         variant="outlined"
                         fullWidth
                         onClick={() => {
-                            setCurrentStep("Scan");
+                            setCurrentStep("Skeniranje");
                             setResultData(null);
                         }}
                         sx={{
@@ -162,7 +158,7 @@ const ResultSection = ({data, setCurrentStep, setResultData}: ResultSectionProps
                             },
                         }}
                     >
-                        Analyze another
+                        Analiziraj ponovo
                     </Button>
                     <Button
                         variant="contained"
@@ -177,12 +173,11 @@ const ResultSection = ({data, setCurrentStep, setResultData}: ResultSectionProps
                             },
                         }}
                     >
-                        Export Results
+                        Izvezi rezultate
                     </Button>
                 </Stack>
             </Stack>
         </Card>
-
     );
 };
 

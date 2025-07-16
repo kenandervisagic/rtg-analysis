@@ -7,7 +7,7 @@ import {useState} from "react";
 
 function App() {
     const [resultData, setResultData] = useState<ResultData | null>(null);
-    const [currentStep, setCurrentStep] = useState("Scan");
+    const [currentStep, setCurrentStep] = useState("Skeniranje");
 
     // This is called when UploadSection finishes uploading and has result data
     const handleResult = (data: ResultData) => {
