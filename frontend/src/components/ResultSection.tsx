@@ -40,7 +40,7 @@ const ResultSection = ({data, setCurrentStep, setResultData, onExportSuccess}: R
                 <Box textAlign="center">
                     <img
                         src={data.imageUrl}
-                        alt="X-zraka"
+                        alt="RTG"
                         style={{
                             width: "100%",
                             objectFit: "contain",
@@ -50,7 +50,7 @@ const ResultSection = ({data, setCurrentStep, setResultData, onExportSuccess}: R
                         }}
                     />
                     <Typography variant="caption" mt={1} display="block" color="#94a3b8">
-                        Analizirana X-zraka
+                        Analizirana RTG snimka
                     </Typography>
                 </Box>
 

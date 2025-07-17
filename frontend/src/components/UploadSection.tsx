@@ -211,7 +211,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                     }}
                 >
                     <Typography variant="h6" color="#cbd5e1" mb={1}>
-                        Dodajte X-Ray snimak
+                        Dodajte RTG snimak
                     </Typography>
 
                     <Typography variant="body2" color="#64748b" mb={2}>
@@ -244,7 +244,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                 <Box mb={3} textAlign="center" position="relative">
                     <img
                         src={previewUrl}
-                        alt="Pregled X-zrake"
+                        alt="Pregled RTG snimka"
                         style={{
                             maxWidth: "100%",
                             maxHeight: 280,
@@ -259,7 +259,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                 <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
                     <CircularProgress size={48} sx={{ color: "#6366f1" }} />
                     <Typography mt={2} color="#cbd5e1">
-                        Analiziram X-Ray snimak...
+                        Analiza RTG snimka...
                     </Typography>
                     <Box width="100%" mt={2}>
                         <LinearProgress
@@ -332,7 +332,7 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
                     }}
                     disabled={loading}
                 >
-                    {file ? "Analiziraj X-Ray snimak" : "Učitaj X-Ray snimak"}
+                    {file ? "Analiziraj RTG snimak" : "Učitaj RTG snimak"}
                 </Button>
             </Box>
         </Paper>

@@ -1,9 +1,7 @@
-// components/ReportPreview.tsx
 import { Button, Card, Stack, Typography } from "@mui/material";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import DescriptionIcon from "@mui/icons-material/Description";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-
+import CodeIcon from '@mui/icons-material/Code';
 interface ReportPreviewProps {
     data: {
         diagnosis: string;
@@ -29,9 +27,9 @@ const ReportPreview = ({ data, onBack }: ReportPreviewProps) => {
         });
     };
 
-    const handleExport = async (format: "pdf" | "docx" | "html") => {
+    const handleExport = async (format: "pdf" | "html") => {
         try {
-            let payload = {
+            const payload = {
                 diagnosis: data.diagnosis,
                 confidence: data.confidence,
                 insights: data.insights,
@@ -98,11 +96,12 @@ const ReportPreview = ({ data, onBack }: ReportPreviewProps) => {
                             },
                         }}
                     >
-                        PDF
+                        PDF (.pdf)
                     </Button>
                     <Button
                         variant="contained"
-                        startIcon={<DescriptionIcon />}
+                        onClick={() => handleExport("html")}
+                        startIcon={<CodeIcon />}
                         sx={{
                             background: "#7c3aed",
                             textTransform: "none",
@@ -111,19 +110,7 @@ const ReportPreview = ({ data, onBack }: ReportPreviewProps) => {
                             },
                         }}
                     >
-                        Word (.docx)
-                    </Button>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            background: "#7c3aed",
-                            textTransform: "none",
-                            "&:hover": {
-                                background: "#6d28d9",
-                            },
-                        }}
-                    >
-                        HTML
+                        HTML (.html)
                     </Button>
                 </Stack>
 
