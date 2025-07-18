@@ -26,7 +26,7 @@ jobs:
 
       - name: Docker TLS Setup + Build Images
         run: |
-          cp -r .infrastructure/* .
+          cp -r .infrastructure/.docker/* .
         
           chmod +x ./docker-tls-setup.sh
           source docker-tls-setup.sh
