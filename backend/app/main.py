@@ -105,7 +105,7 @@ async def predict_api(file: UploadFile = File(...)):
                  "content": "Vi ste radiolog koji pruža profesionalne dijagnostičke nalaze za druge ljekare."},
                 {"role": "user", "content": llm_prompt}
             ],
-            temperature=0.3,
+            temperature=0.5,
             max_tokens=300,  # smaller to encourage brevity
         )
 
