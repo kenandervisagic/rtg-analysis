@@ -23,6 +23,7 @@ app = FastAPI(
     redoc_url="/api/redoc" if is_local else None,
     openapi_url="/api/openapi.json" if is_local else None
 )
+
 api_router = APIRouter()
 
 app.add_middleware(

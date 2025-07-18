@@ -4,6 +4,7 @@ on:
   push:
     branches: [master]
     paths:
+      - ".github/workflows/build-deploy-infra.yaml"
       - ".infrastructure/nginx/**"
       - ".infrastructure/docker-compose-infra.yaml"
       - ".infrastructure/docker-compose.yaml"

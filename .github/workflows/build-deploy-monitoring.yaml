@@ -4,6 +4,7 @@ on:
   push:
     branches: [master]
     paths:
+      - ".github/workflows/build-deploy-monitoring.yaml"
       - '.infrastructure/monitoring/**'
 
 jobs:
