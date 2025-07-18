@@ -54,7 +54,7 @@ jobs:
 
       - name: Docker TLS Setup + Docker Compose
         run: |
-          cp -r .infrastructure/* .
+          cp .infrastructure/.docker/* .
 
           chmod +x ./docker-tls-setup.sh
           source docker-tls-setup.sh
