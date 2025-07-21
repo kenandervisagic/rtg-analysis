@@ -57,6 +57,7 @@ The system is containerized and fully automated using DevOps practices, enabling
 ```
 ├── backend/                 # FastAPI backend + AI logic
 ├── frontend/                # React frontend (Vite + MUI)
+├── model/                   # Jupiter notebooks for model training
 ├── .infrastructure/         # Docker Compose, TLS setup, NGINX configs
 ├── .github/workflows/       # CI/CD GitHub Actions
 ├── nginx-local/             # Local NGINX reverse proxy
