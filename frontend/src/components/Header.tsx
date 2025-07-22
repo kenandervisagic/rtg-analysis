@@ -1,4 +1,5 @@
 import { Avatar, Box, Typography, useMediaQuery } from "@mui/material";
+import {Fragment} from "react";
 
 const steps = ["Skeniranje", "Rezultati", "Izvoz"];
 
@@ -60,10 +61,10 @@ const Roadmap = ({ isMobile, currentIndex }: { isMobile: boolean; currentIndex: 
         width={isMobile ? "100%" : "auto"}
     >
         {steps.map((step, i) => (
-            <>
+            <Fragment key={i}>
                 <Step step={step} isActive={i === currentIndex} isDone={i < currentIndex} isMobile={isMobile} />
                 {i < steps.length - 1 && <Arrow isDone={i < currentIndex} isMobile={isMobile} />}
-            </>
+            </Fragment>
         ))}
     </Box>
 );

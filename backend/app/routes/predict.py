@@ -1,6 +1,6 @@
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
-from services.utils import allowed_file, preprocess_image
+from services.utils import allowed_file, preprocess_image, preprocess_dicom
 from services.llm import generate_clinical_summary
 from model.loader import model
 import traceback
@@ -13,14 +13,16 @@ async def predict_api(file: UploadFile = File(...)):
         contents = await file.read()
 
         if not allowed_file(file.filename):
-            raise HTTPException(status_code=400, detail="Invalid file type. Only JPG/PNG allowed.")
+            raise HTTPException(status_code=400, detail="Invalid file type. Only JPG/PNG/DICOM allowed.")
 
-        img_tensor = preprocess_image(contents)
+        if file.filename.lower().endswith(".dcm"):
+            img_tensor = preprocess_dicom(contents)  # 👈 DICOM specific preprocessing
+        else:
+            img_tensor = preprocess_image(contents)
+
         prediction = model.predict(img_tensor)[0][0]
-
         result = "PNEUMONIA" if prediction > 0.5 else "NORMAL"
         confidence = float(prediction) if prediction > 0.5 else 1 - float(prediction)
-
         insight = generate_clinical_summary(result, confidence)
 
         return {

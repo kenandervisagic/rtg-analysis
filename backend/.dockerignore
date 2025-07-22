@@ -1,0 +1,6 @@
+.venv/
+env.example
+Dockerfile
+docker-compose-local.yaml
+Dockerfile.local
+.gitignore

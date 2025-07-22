@@ -20,7 +20,7 @@ interface ResultSectionProps {
 
 const ResultSection = ({data, setCurrentStep, setResultData, onExportSuccess}: ResultSectionProps) => {
     const handleExport = () => {
-        onExportSuccess(); // 👈 Call the screen switch here
+        onExportSuccess();
         setCurrentStep("Izvoz");
     };
 
