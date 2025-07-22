@@ -43,7 +43,7 @@ def render_html(data: dict) -> str:
 
                         .title {{
                             font-weight: 600;
-                            font-size: 2.5rem;
+                            font-size: 2rem;
                             color: #7c3aed;
                             letter-spacing: 1px;
                             user-select: none;
@@ -52,7 +52,7 @@ def render_html(data: dict) -> str:
 
                         .brand {{
                             font-weight: 700;
-                            font-size: 1.4rem;
+                            font-size: 1rem;
                             color: #4c1d95;
                             text-transform: uppercase;
                             letter-spacing: 2px;
@@ -74,21 +74,21 @@ def render_html(data: dict) -> str:
 
                         p {{
                             font-weight: 300;
-                            line-height: 1.5;
-                            font-size: 1rem;
+                            line-height: 1.2;
+                            font-size: 0.8rem;
                             margin-top: 0.4rem;
                         }}
 
                         .confidence {{
                             font-weight: 600;
                             color: #7c3aed;
-                            font-size: 1.25rem;
+                            font-size: 1.05rem;
                             margin-top: 0.3rem;
                         }}
 
                         .insight {{
                             margin-top: 0.75rem;
-                            font-size: 1rem;
+                            font-size: 0.8rem;
                             line-height: 1.6;
                             color: #3b3b3b;
                             background-color: #f0ebff;
