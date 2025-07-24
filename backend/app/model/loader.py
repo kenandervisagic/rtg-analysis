@@ -2,8 +2,8 @@ import os
 import requests
 import keras
 
-MODEL_URL = "https://minio.kdidp.art/model/resnet50_pneumonia_optimized.keras"
-MODEL_PATH = "resnet50_pneumonia_optimized.keras"
+MODEL_URL = "https://minio.kdidp.art/model/resnet50_pneumonia_new.keras"
+MODEL_PATH = "resnet50_pneumonia_new.keras"
 
 def download_model_if_needed():
     if not os.path.exists(MODEL_PATH):
