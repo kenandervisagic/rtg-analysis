@@ -1,2 +1,3 @@
 .idea/
 app/resnet50_pneumonia_optimized.keras
+app/resnet50_pneumonia_new.keras
