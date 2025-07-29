@@ -1,19 +1,4 @@
 services:
-  postgres:
-    image: postgres:15
-    container_name: postgres-db
-    restart: always
-    environment:
-      POSTGRES_DB: $POSTGRES_DB
-      POSTGRES_USER: $POSTGRES_USER
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    expose:
-      - "5432"
-    networks:
-      - webnet
-
   nginx-gateway:
     image: "$DOCKER_USERNAME/nginx:$TAG"
     container_name: nginx-gateway

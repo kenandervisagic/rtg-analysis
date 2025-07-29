@@ -189,12 +189,21 @@ const UploadSection = ({ onResult, setCurrentStep }: UploadSectionProps) => {
             onResult(data);
             setCurrentStep("Rezultati");
             reset();
-        } catch (uploadError) {
-            setError("Slanje nije uspjelo. Molimo pokušajte ponovo.");
+        } catch (uploadError: any) {
             clearInterval(timer);
-            console.error("Greška prilikom slanja:", uploadError);
             setLoading(false);
             setProgress(0);
+
+            if (axios.isAxiosError(uploadError)) {
+                const message =
+                    uploadError.response?.data?.detail ||
+                    "Greška prilikom slanja datoteke. Pokušajte ponovo.";
+                setError(message);
+            } else {
+                setError("Neočekivana greška. Pokušajte ponovo.");
+            }
+
+            console.error("Greška prilikom slanja:", uploadError);
         }
     };
 
