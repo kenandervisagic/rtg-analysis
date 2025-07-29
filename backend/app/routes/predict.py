@@ -3,7 +3,8 @@ from fastapi.responses import JSONResponse
 from services.utils import allowed_file, preprocess_image, preprocess_dicom
 from services.llm import generate_clinical_summary
 from model.loader import model
-import traceback
+from pydicom.errors import InvalidDicomError
+from PIL import UnidentifiedImageError
 
 router = APIRouter()
 
@@ -13,12 +14,24 @@ async def predict_api(file: UploadFile = File(...)):
         contents = await file.read()
 
         if not allowed_file(file.filename):
-            raise HTTPException(status_code=400, detail="Invalid file type. Only JPG/PNG/DICOM allowed.")
+            raise HTTPException(status_code=400, detail="Invalid file type. Only JPG, PNG or DICOM allowed.")
 
+        # Optional size check
+        MAX_MB = 10
+        if len(contents) > MAX_MB * 1024 * 1024:
+            raise HTTPException(status_code=413, detail="Datoteka je prevelika. Maksimalna veličina je 10 MB.")
+
+        # DICOM or image
         if file.filename.lower().endswith(".dcm"):
-            img_tensor = preprocess_dicom(contents)  # 👈 DICOM specific preprocessing
+            try:
+                img_tensor = preprocess_dicom(contents)
+            except InvalidDicomError:
+                raise HTTPException(status_code=400, detail="Neispravna DICOM datoteka.")
         else:
-            img_tensor = preprocess_image(contents)
+            try:
+                img_tensor = preprocess_image(contents)
+            except UnidentifiedImageError:
+                raise HTTPException(status_code=400, detail="Neispravna slika. Pokušajte s JPG/PNG formatom.")
 
         prediction = model.predict(img_tensor)[0][0]
         result = "PNEUMONIA" if prediction > 0.5 else "NORMAL"
@@ -31,6 +44,8 @@ async def predict_api(file: UploadFile = File(...)):
             "insights": [insight],
         }
 
+    except HTTPException as http_exc:
+        raise http_exc  
     except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Došlo je do greške tokom analize snimka. Pokušajte ponovo.")
+
