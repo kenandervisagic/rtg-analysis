@@ -14,6 +14,6 @@ scrape_configs:
 
   - job_name: 'crowdsec'
     static_configs:
-      - targets: ['crowdsec:6060']
+      - targets: ['172.18.0.3:6060']  
     scrape_interval: 30s
     metrics_path: /metrics
