@@ -149,7 +149,7 @@ jobs:
           CERT_PEM: ${{ secrets.CERT_PEM }}
           KEY_PEM: ${{ secrets.KEY_PEM }}
           CA_PEM: ${{ secrets.CA_PEM }}
-          TAG: ${{ needs.build-app.outputs.short_sha }}
+          TAG: ${{ needs.build-backend.outputs.short_sha }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           POSTGRES_DB: ${{secrets.POSTGRES_DATABASE}}
           POSTGRES_USER: ${{secrets.POSTGRES_USERNAME}}
