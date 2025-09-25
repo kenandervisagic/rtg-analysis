@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import predict, export, health
 from middleware.upload_limit import limit_upload_size
+
 import os
 
 is_local = os.getenv("ENV") == "local"
