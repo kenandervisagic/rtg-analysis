@@ -64,7 +64,7 @@ jobs:
 
   build-backend:
     runs-on: ubuntu-latest
-    needs: sonarqube-analysis
+    needs: sonarqube-analysis-backend
     outputs:
       short_sha: ${{ steps.set_output.outputs.short_sha }}
     steps:
@@ -95,7 +95,7 @@ jobs:
 
   build-frontend:
     runs-on: ubuntu-latest
-    needs: sonarqube-analysis
+    needs: sonarqube-analysis-frontend
     outputs:
       short_sha: ${{ steps.set_output.outputs.short_sha }}
     steps:
