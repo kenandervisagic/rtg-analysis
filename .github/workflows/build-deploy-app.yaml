@@ -10,8 +10,8 @@ on:
       - '.infrastructure/docker-compose.yaml'
 
 jobs:
-  sonarqube-analysis:
-    name: SonarQube Security Analysis
+  sonarqube-analysis-backend:
+    name: SonarQube Security Analysis Backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,7 +25,7 @@ jobs:
           projectBaseDir: backend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}  # https://sonarqube.kdidp.art
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} 
       
       # Block deployment if Quality Gate fails (critical security issues)
       - name: SonarQube Quality Gate
@@ -35,6 +35,32 @@ jobs:
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  sonarqube-analysis-frontend:
+    name: SonarQube Security Analysis Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for better analysis
+      
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        with:
+          projectBaseDir: frontend
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} 
+      
+      # Block deployment if Quality Gate fails (critical security issues)
+      - name: SonarQube Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        with:
+          scanMetadataReportFile: frontend/.scannerwork/report-task.txt
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
 
   build-backend:
     runs-on: ubuntu-latest
