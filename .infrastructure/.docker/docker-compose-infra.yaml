@@ -33,9 +33,6 @@ services:
       - webnet
     restart: on-failure
 
-volumes:
-  pgdata:
-
 networks:
   webnet:
 
